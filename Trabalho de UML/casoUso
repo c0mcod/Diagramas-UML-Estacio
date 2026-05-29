@@ -9,63 +9,73 @@ skinparam packageStyle rectangle
 :Professor: as prof
 :Coordenação: as coord
 
-
 package Instituição {
-    (Cadastro de disciplinas) as cd 
+    (Manter cadastros) as mc
+    (Cadastrar usuário) as cu
+    (Cadastrar aluno) as ca
+    (Cadastrar professor) as cp
+    (Cadastro de disciplinas) as cd
     (Cadastro de turmas) as ct
-    (Cadastro de aluno) as ca
-    (Cadastro de professores) as cp
+    (Gerar relatórios) as gr
     (Notificar alunos) as na
 }
 
 package AlunoInterface {
-    (Abrir solicitação academica) as asa
-    (Anexar documentos) as anxDoc
-    (Verificar status de solicitação) as status
+    (Registrar solicitação) as rs
+    (Anexar documento) as anxDoc
+    (Acompanhar solicitação) as acomp
 }
 
-package Secretarianterface {
-    (Validar documentos) as validDoc
+package SecretariaInterface {
+    (Validar documentação) as validDoc
     (Encaminhar solicitação) as encSol
 }
 
-package Coordenaçãonterface {
-    (Aprovar solicitação) as aprovSol
-    (Reprovar solicitação) as reprSol
+package CoordenacaoInterface {
+    (Analisar solicitação) as analise
+    (Deferir solicitação) as aprovSol
+    (Indeferir solicitação) as reprSol
 }
 
-package Professornterface {
-    (Responder solicitações) as resSol
+package ProfessorInterface {
+    (Responder solicitação) as resSol
 }
 
-' =========================
-' RELACIONAMENTOS
-' =========================
 
-adm --> ca
-adm --> cp
+adm --> mc
+adm --> gr
+
+sec --> validDoc
+sec --> encSol
+sec --> na
+sec --> gr
 
 coord --> cd
 coord --> ct
+coord --> analise
 coord --> na
+coord --> gr
 
-sec --> na
-sec --> validDoc
-sec --> encSol
-
-prof --> na
 prof --> resSol
+prof --> gr
 
-aln --> asa
+aln --> rs
 aln --> anxDoc
-aln --> status
+aln --> acomp
 
-coord --> aprovSol
-coord --> reprSol
+ca -|> cu
+cp -|> cu
 
-' =========================
-' ALINHAMENTO VISUAL
-' =========================
+cd -|> mc
+ct -|> mc
+cu -|> mc
 
+
+encSol ..> validDoc : <<include>>
+
+anxDoc ..> rs : <<extend>>
+
+aprovSol ..> analise : <<extend>>
+reprSol ..> analise : <<extend>>
 
 @enduml
