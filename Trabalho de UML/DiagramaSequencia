@@ -1,0 +1,42 @@
+@startuml
+title Registrar Solicitação Acadêmica
+
+actor Aluno
+participant "TelaSolicitacao" as Tela
+participant "SolicitacaoController" as Controller
+participant "SolicitacaoService" as Service
+participant "Solicitacao" as Entidade
+participant "Documento" as Doc
+database "Banco de Dados" as BD
+participant "SistemaNotificacao" as Notif
+
+Aluno -> Tela : acessarTelaSolicitacao()
+Tela -> Controller : listarTiposSolicitacao()
+Controller -> BD : buscarTipos()
+BD --> Controller : tiposSolicitacao
+Controller --> Tela : exibirTipos()
+
+Aluno -> Tela : selecionarTipo()
+Aluno -> Tela : preencherDados()
+Aluno -> Tela : anexarDocumento()
+
+Tela -> Controller : enviarSolicitacao(dados, arquivo)
+Controller -> Service : validarCampos(dados)
+
+alt campos inválidos
+    Service --> Controller : erroValidacao
+    Controller --> Tela : exibirErro()
+else campos válidos
+    Service -> Entidade : criarSolicitacao(dados)
+    Service -> Doc : associarDocumento(arquivo)
+    Service -> BD : salvarSolicitacao(solicitacao)
+    BD --> Service : solicitacaoSalva
+    Service -> BD : registrarHistorico(solicitacao)
+    Service -> Notif : enviarNotificacao(aluno, protocolo)
+    Notif --> Service : notificacaoEnviada
+    Service --> Controller : protocolo
+    Controller --> Tela : exibirProtocolo(protocolo)
+    Tela --> Aluno : confirmacaoComProtocolo
+end
+
+@enduml
