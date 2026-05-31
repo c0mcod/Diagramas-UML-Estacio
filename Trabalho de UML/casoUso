@@ -2,70 +2,95 @@
 
 left to right direction
 skinparam packageStyle rectangle
+skinparam packagePadding 20
+skinparam nodesep 60
+skinparam ranksep 80
 
-:Aluno: as aln
+' ──────────── ATORES ────────────
+:Aluno:         as aln
+:Professor:     as prof
+:Secretaria:    as sec
+:Coordenação:   as coord
 :Administração: as adm
-:Secretaria: as sec
-:Professor: as prof
-:Coordenação: as coord
 
+' ──────────── PACOTES ────────────
 
-package Instituição {
-    (Cadastro de disciplinas) as cd 
-    (Cadastro de turmas) as ct
-    (Cadastro de aluno) as ca
-    (Cadastro de professores) as cp
-    (Notificar alunos) as na
+package "Administração" {
+    (Manter cadastros)        as mc
+    (Cadastrar usuário)       as cu
+    (Cadastrar aluno)         as ca
+    (Cadastrar professor)     as cp
+    (Cadastro de disciplinas) as cd
+    (Cadastro de turmas)      as ct
+    (Gerar relatórios)        as gr
 }
 
-package AlunoInterface {
-    (Abrir solicitação academica) as asa
-    (Anexar documentos) as anxDoc
-    (Verificar status de solicitação) as status
-}
-
-package Secretarianterface {
-    (Validar documentos) as validDoc
+package "Secretaria" {
+    (Validar documentação)   as validDoc
     (Encaminhar solicitação) as encSol
+    (Notificar alunos)       as na
 }
 
-package Coordenaçãonterface {
-    (Aprovar solicitação) as aprovSol
-    (Reprovar solicitação) as reprSol
+package "Coordenação" {
+    (Analisar solicitação)  as analise
+    (Deferir solicitação)   as aprovSol
+    (Indeferir solicitação) as reprSol
 }
 
-package Professornterface {
-    (Responder solicitações) as resSol
+package "Professor" {
+    (Responder solicitação) as resSol
+    (Realizar check-in)     as checkin
 }
 
-' =========================
-' RELACIONAMENTOS
-' =========================
+package "Aluno" {
+    (Registrar solicitação)          as rs
+    (Acompanhar solicitação)         as acomp
+    (Selecionar meio de notificação) as smn
+    (Anexar documento)               as anxDoc
+}
 
-adm --> ca
-adm --> cp
+package "Comunicação" {
+    (Chat de turma)                as chat
+    (Grupo gerado automaticamente) as grupo
+}
 
+' ──────────── ASSOCIAÇÕES ATOR → CASO DE USO ────────────
+
+adm   --> mc
+adm   --> gr
+
+sec   --> encSol
+sec   --> validDoc
+sec   --> na
+
+coord --> analise
 coord --> cd
 coord --> ct
-coord --> na
+coord --> gr
 
-sec --> na
-sec --> validDoc
-sec --> encSol
+prof  --> resSol
+prof  --> checkin
 
-prof --> na
-prof --> resSol
+aln   --> rs
+aln   --> acomp
+aln   --> smn
+aln   --> chat
 
-aln --> asa
-aln --> anxDoc
-aln --> status
+' ──────────── HERANÇAS ────────────
 
-coord --> aprovSol
-coord --> reprSol
+ca -|> cu
+cp -|> cu
+cu -|> mc
+cd -|> mc
+ct -|> mc
 
-' =========================
-' ALINHAMENTO VISUAL
-' =========================
+' ──────────── INCLUDE / EXTEND ────────────
 
+encSol   ..> validDoc : <<include>>
+anxDoc   ..> rs       : <<extend>>
+aprovSol ..> analise  : <<extend>>
+reprSol  ..> analise  : <<extend>>
+grupo    ..> ct       : <<include>>
+chat     ..> grupo    : <<include>>
 
 @enduml
