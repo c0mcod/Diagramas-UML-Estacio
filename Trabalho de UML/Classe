@@ -1,0 +1,141 @@
+@startuml
+
+class Pessoa {
+    - nome : String
+    - cpf : String
+    - email : String
+    - senha : String
+    + login()
+    + logout()
+}
+
+class Aluno {
+    - matricula : String
+    - curso : String
+    + abrirSolicitacao()
+    + acompanharSolicitacao()
+}
+
+class Professor {
+    - siape : String
+    - departamento : String
+    + emitirParecer()
+    + consultarSolicitacoesPorDisciplina()
+}
+
+class FuncionarioSecretaria {
+    - matricula : String
+    + receberSolicitacao()
+    + validarDocumento()
+    + encaminharSolicitacao()
+}
+
+class Coordenador {
+    - curso : String
+    + deferir()
+    + indeferir()
+    + consultarSolicitacoes()
+    + acompanharIndicadores()
+}
+
+class Administrador {
+    + gerenciarUsuarios()
+    + gerenciarTiposSolicitacao()
+    + configurarSistema()
+}
+
+class Solicitacao {
+    - id : Long
+    - descricao : String
+    - status : String
+    - dataAbertura : LocalDate
+    - dataAtualizacao : LocalDate
+    + abrir()
+    + cancelar()
+    + atualizarStatus()
+}
+
+class TipoSolicitacao {
+    - id : Long
+    - nome : String
+    - descricao : String
+    - prazoEmDias : Integer
+}
+
+class Documento {
+    - id : Long
+    - nomeArquivo : String
+    - caminho : String
+    - dataUpload : LocalDate
+    + upload()
+    + remover()
+}
+
+class Disciplina {
+    - id : Long
+    - nome : String
+    - codigo : String
+    - cargaHoraria : Integer
+}
+
+class Turma {
+    - id : Long
+    - codigo : String
+    - semestre : Integer
+    - ano : Integer
+}
+
+class Parecer {
+    - id : Long
+    - descricao : String
+    - decisao : String
+    - dataEmissao : LocalDate
+    + emitir()
+}
+
+class Notificacao {
+    - id : Long
+    - mensagem : String
+    - lida : Boolean
+    - dataEnvio : LocalDate
+    + enviar()
+    + marcarComoLida()
+}
+
+class HistoricoSolicitacao {
+    - id : Long
+    - statusAnterior : String
+    - statusNovo : String
+    - observacao : String
+    - dataMovimentacao : LocalDate
+}
+
+' herança primeiro — define a camada esquerda
+Pessoa <|-- Aluno
+Pessoa <|-- Professor
+Pessoa <|-- FuncionarioSecretaria
+Pessoa <|-- Coordenador
+Pessoa <|-- Administrador
+
+' subclasses -> Solicitacao — define a camada do meio
+Aluno "1" --> "1..*" Solicitacao : faz
+FuncionarioSecretaria "1" --> "0..*" Solicitacao : encaminha
+Coordenador "1" --> "0..*" Solicitacao : decide
+Professor "1" --> "0..*" Parecer : emite
+
+' Solicitacao -> filhos — define a camada direita
+Solicitacao "1..*" --> "1" TipoSolicitacao : é do tipo
+Solicitacao "1" o-- "0..*" Documento : anexa
+Solicitacao "1" *-- "1..*" HistoricoSolicitacao : registra
+Solicitacao "1" o-- "0..*" Parecer : recebe
+Solicitacao "1" --> "0..*" Notificacao : gera
+
+Notificacao "0..*" --> "1" Aluno : notifica
+Turma "1" o-- "0..*" Aluno
+Parecer "0..*" --> "1" Disciplina : referente a
+Disciplina "0..*" --> "0..*" Solicitacao : vinculada a
+
+' --------------------- ANOTAÇÕES -----------------------
+note bottom of Professor : SIAPE é o número de matrícula\nfuncional de servidores públicos\nfederais no Brasil.
+
+@enduml
