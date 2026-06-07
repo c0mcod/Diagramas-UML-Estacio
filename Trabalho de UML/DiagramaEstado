@@ -1,0 +1,25 @@
+@startuml
+left to right direction
+
+[*] --> Aberta : Solicitação registrada
+
+Aberta --> EmValidacao : Encaminhar para validação
+
+EmValidacao --> EmAnalise : Documento validado
+EmValidacao --> Aberta : Documento recusado
+
+EmAnalise --> Respondida : Parecer emitido
+EmAnalise --> Deferida : Solicitação deferida
+EmAnalise --> Indeferida : Solicitação indeferida
+
+Respondida --> Concluida : Processo finalizado
+Deferida --> Concluida : Processo finalizado
+Indeferida --> Concluida : Processo finalizado
+
+Aberta --> Cancelada : Aluno cancela
+EmValidacao --> Cancelada : Aluno cancela
+EmAnalise --> Cancelada : Aluno cancela
+
+Cancelada --> Concluida : Processo finalizado
+
+@enduml
