@@ -1,10 +1,11 @@
-@startuml
+@startuml diagramaClasse
 
 class Pessoa {
     - nome : String
     - cpf : String
     - email : String
-    - senha : String
+    - senhaHash : String
+    - salt : String
     + login()
     + logout()
 }
@@ -42,6 +43,19 @@ class Administrador {
     + gerenciarUsuarios()
     + gerenciarTiposSolicitacao()
     + configurarSistema()
+}
+
+class Role {
+    - id : Long
+    - nome : String
+    - descricao : String
+    + temPermissao()
+}
+
+class Permissao {
+    - id : Long
+    - nome : String
+    - descricao : String
 }
 
 class Solicitacao {
@@ -110,20 +124,24 @@ class HistoricoSolicitacao {
     - dataMovimentacao : LocalDate
 }
 
-' herança primeiro — define a camada esquerda
+' Herança
 Pessoa <|-- Aluno
 Pessoa <|-- Professor
 Pessoa <|-- FuncionarioSecretaria
 Pessoa <|-- Coordenador
 Pessoa <|-- Administrador
 
-' subclasses -> Solicitacao — define a camada do meio
+' RBAC — Pessoa tem roles, roles tem permissões
+Pessoa "0..*" --> "1..*" Role : possui
+Role "1..*" --> "1..*" Permissao : concede
+
+' subclasses -> Solicitacao
 Aluno "1" --> "1..*" Solicitacao : faz
 FuncionarioSecretaria "1" --> "0..*" Solicitacao : encaminha
 Coordenador "1" --> "0..*" Solicitacao : decide
 Professor "1" --> "0..*" Parecer : emite
 
-' Solicitacao -> filhos — define a camada direita
+' Solicitacao -> filhos
 Solicitacao "1..*" --> "1" TipoSolicitacao : é do tipo
 Solicitacao "1" o-- "0..*" Documento : anexa
 Solicitacao "1" *-- "1..*" HistoricoSolicitacao : registra
@@ -131,11 +149,17 @@ Solicitacao "1" o-- "0..*" Parecer : recebe
 Solicitacao "1" --> "0..*" Notificacao : gera
 
 Notificacao "0..*" --> "1" Aluno : notifica
-Turma "1" o-- "0..*" Aluno
 Parecer "0..*" --> "1" Disciplina : referente a
 Disciplina "0..*" --> "0..*" Solicitacao : vinculada a
 
+' Disciplina e Turma
+Disciplina "1" o-- "0..*" Turma : oferece
+Turma "1" o-- "0..*" Aluno : matriculado
+
 ' --------------------- ANOTAÇÕES -----------------------
 note bottom of Professor : SIAPE é o número de matrícula\nfuncional de servidores públicos\nfederais no Brasil.
+note right of Role : Exemplos de roles:\nALUNO, PROFESSOR,\nCOORDENADOR, ADMIN
+note right of Permissao : Exemplos de permissões:\nABRIR_SOLICITACAO,\nDEFERIR, EMITIR_PARECER
+note right of Pessoa : senhaHash: senha criptografada\nsalt: valor aleatório usado\nna criptografia da senha.
 
 @enduml
