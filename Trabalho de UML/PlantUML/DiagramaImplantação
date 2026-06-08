@@ -1,0 +1,66 @@
+@startuml
+title Diagrama de Implantação - Sistema de Atendimento Acadêmico
+
+skinparam Shadowing false
+
+node "Dispositivo do Usuário" <<device>> {
+    node "Navegador Web" <<executionEnviroment>> {
+        artifact "Interface do Sistema\n(Aluno, Professor, \nSecretaria, Coordenação, \nAdministerador)" as Frontend
+    }
+}
+
+node "Servidor de Aplicação" <<server>> {
+    artifact "API REST" as API
+
+    component "Autenticação" as Auth
+
+    component "Gerenciamento\n de Solicitações" as Solic
+
+    component "Gerenciamento \n de Documentos" as Docs
+
+    component "Gerenciamento \n de Notificação" as Notif
+
+    component "Gerenciamento \n de Relatorios" as Rel
+}
+
+database "Banco de Dados" <<database>> {
+
+    artifact "Usuários"
+    artifact "Solicitações"
+    artifact "Documentos"
+    artifact "Pareceres"
+    artifact "Histórico"
+    artifact "Notificações"
+}
+
+node "Servidor de Arquivos" <<server>> {
+
+    folder "Anexos PDF"
+    folder "Comprovantes"
+    folder "Documentos Acadêmicos" 
+}
+
+cloud "Serviço Externo" {
+
+    artifact "E-mail"
+    artifact "WhatsApp"
+}
+
+Frontend --> API : HTTPS
+
+API --> Auth
+API --> Solic
+API --> Docs
+API --> Notif
+API --> Rel 
+
+Auth --> "Banco de Dados"
+Solic --> "Banco de Dados"
+Rel --> "Banco de Dados"
+
+Docs --> "Servidor de Arquivos"
+
+Notif --> "E-mail" : SMTP/API
+Notif --> "WhatsApp" : REST API
+
+@enduml
