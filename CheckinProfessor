@@ -1,0 +1,79 @@
+@startuml
+
+|Professor|
+start
+
+:Acessar sistema;
+
+|Sistema|
+:Autenticar usuário;
+
+if (Usuário válido?) then (Sim)
+
+    |Professor|
+    :Realizar check-in;
+
+    |Sistema|
+    :Registrar horário de chegada;
+
+    |Professor|
+    :Verificar sala prevista;
+
+    if (Sala correta?) then (Sim)
+
+        :Confirmar sala;
+
+    else (Não)
+
+        :Reportar sala incorreta;
+        :Solicitar realocação;
+
+        |Sistema|
+        :Encaminhar solicitação;
+
+        |Coordenação|
+        :Analisar solicitação de realocação;
+
+        if (Sala disponível?) then (Sim)
+
+            :Aprovar realocação;
+
+            |Sistema|
+            :Notificar professor;
+
+        else (Não)
+
+            :Negar realocação;
+
+            |Sistema|
+            :Notificar professor;
+
+        endif
+
+    endif
+
+    |Professor|
+    :Responder solicitações;
+
+    :Visualizar registro de ponto;
+
+    :Realizar checkout;
+
+    |Sistema|
+    :Registrar horário de saída;
+
+    |Professor|
+    :Encerrar sessão;
+
+    stop
+
+else (Não)
+
+    |Sistema|
+    :Exibir erro de autenticação;
+
+    stop
+
+endif
+
+@enduml
