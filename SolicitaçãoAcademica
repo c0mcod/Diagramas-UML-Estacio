@@ -1,0 +1,90 @@
+@startuml
+
+|Aluno|
+start
+
+:Acessar sistema;
+
+|Sistema|
+:Autenticar usuário;
+
+if (Usuário válido?) then (Sim)
+
+    |Aluno|
+    :Abrir solicitação;
+    :Escolher tipo de solicitação;
+
+    |Sistema|
+    if (Exige documento?) then (Sim)
+
+        |Aluno|
+        :Anexar documento;
+
+    else (Não)
+
+    endif
+
+    |Aluno|
+    :Enviar solicitação;
+
+    |Sistema|
+    :Registrar solicitação;
+
+    |Secretaria|
+    :Validar documentação;
+
+    if (Documentação válida?) then (Sim)
+
+        :Encaminhar solicitação;
+
+        if (Responsável é Professor?) then (Sim)
+
+            |Professor|
+            :Analisar solicitação;
+
+        else (Não)
+
+            |Coordenação|
+            :Analisar solicitação;
+
+        endif
+
+        if (Solicitação aprovada?) then (Sim)
+
+            |Sistema|
+            :Atualizar status para Aprovada;
+
+        else (Não)
+
+            |Sistema|
+            :Atualizar status para Reprovada;
+
+        endif
+
+        :Notificar aluno;
+
+        |Aluno|
+        :Consultar resultado;
+
+        stop
+
+    else (Não)
+
+        |Sistema|
+        :Solicitar correção da documentação;
+        :Notificar aluno;
+
+        stop
+
+    endif
+
+else (Não)
+
+    |Sistema|
+    :Exibir erro de autenticação;
+
+    stop
+
+endif
+
+@enduml
